@@ -1,0 +1,322 @@
+{% block form_javascript %}
+{% spaceless %}
+    {% for child in form %}
+        {{ form_javascript(child) }}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_javascript %}
+
+{% block field_javascript "" %}
+
+{% block button_javascript "" %}
+{% block px_tinymce_javascript %}
+{% spaceless %}
+    <script type="text/javascript">
+        $('textarea#{{ id }}').tinymce({
+            height : {{ form.vars.attr['data-size'] is defined and form.vars.attr['data-size'] =="small"  ? 200 : 500}},
+            setup: function (ed) {
+                ed.on('init', function (e) {
+                    // hide the loading image here
+                    // give css display: none to the preloader image
+                    $('#{{ id }}_container').removeClass("hide");
+                    $('#loader1_{{ id }}').hide();
+                });
+                ed.on('keyup', function (e) {
+                    tinymce.triggerSave();
+                });
+                ed.on('change', function(e) {
+                    tinymce.triggerSave();
+                });
+            },
+            // Location of TinyMCE script
+            script_url 							: '{{ asset('bundles/pxform/tinymce/tinymce.min.js') }}',
+            // General options
+            theme 								: "modern",
+            plugins: [
+                "advlist autolink lists link charmap hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime media nonbreaking save table contextmenu directionality",
+                "textcolor colorpicker textpattern jbimages"
+            ],
+            toolbar1: "undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent| forecolor backcolor",
+            toolbar2: "link jbimages media ",
+            image_advtab: true,
+            relative_urls: false,
+
+        });
+
+
+    </script>
+{% endspaceless %}
+{% endblock px_tinymce_javascript %}
+
+{% block px_date_javascript %}
+{% spaceless %}
+    <script src="{{ asset('bundles/pxform/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('bundles/pxform/js/bootstrap-datepicker.fr.js') }}"></script>
+    <script src="{{ asset('bundles/pxform/js/jquery.mask.min.js') }}"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $field = $('#date-{{ id }}');
+            var date;
+            $field.datepicker({
+                format: 'dd/mm/yyyy',
+                language: '{{ app.request.locale }}',
+                startView: 2,
+                onSelect: function (dateText, inst) {
+                    date = dateText;
+                }
+            });
+            $field.mask("00/00/0000", {placeholder: "jj/mm/aaaa"});
+        });
+
+
+    </script>
+{% endspaceless %}
+{% endblock %}
+
+{% block px_slider_javascript %}
+{% spaceless %}
+    <script type="text/javascript">
+        function refreshSwatch() {
+            var red = $( "#red" ).slider( "value" ),
+                    green = $( "#green" ).slider( "value" ),
+                    blue = $( "#blue" ).slider( "value" ),
+                    hex = hexFromRGB( red, green, blue );
+            $( "#swatch" ).css( "background-color", "#" + hex );
+        }
+        function hexFromRGB(r, g, b) {
+            var hex = [
+                r.toString( 16 ),
+                g.toString( 16 ),
+                b.toString( 16 )
+            ];
+            $.each( hex, function( nr, val ) {
+                if ( val.length === 1 ) {
+                    hex[ nr ] = "0" + val;
+                }
+            });
+            return hex.join( "" ).toUpperCase();
+        }
+        jQuery(document).ready(function($) {
+            $(function() {
+                $("#blue").slider({
+                    orientation: "horizontal",
+                    range: "min",
+                    min: 0,
+                    max: 100,
+                    value: 50,
+                    slide: function( event, ui ) {
+                        $(".valeurProBar").val( ui.value );
+                    },
+                    change: refreshSwatch
+                });
+                var width= 50* $( "#blue").width()/100;
+                $( ".ui-widget-header" ).css( "width", width);
+                $(".valeurProBar").val( $( "#blue" ).slider( "value" ) );
+
+            });
+
+            $(function() {
+                $(".ui-slider .ui-slider-range").each(function() {
+                    $(this)
+                            .data("origWidth", $(this).width())
+                            .width(0)
+                            .animate({
+                                width: $(this).data("origWidth")
+                            }, 1200);
+                });
+            });
+        });
+    </script>
+{% endspaceless %}
+{% endblock px_slider_javascript %}
+
+
+{% block px_rating_javascript %}
+{% spaceless %}
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $('[name="{{ full_name }}"]').rating({{ configs|json_encode|raw }});
+        });
+    </script>
+{% endspaceless %}
+{% endblock px_rating_javascript %}
+
+{% block px_chosen_javascript %}
+{% spaceless %}
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $field = $('#{{ id }}');
+
+            {% block px_chosen_javascript_prototype %}
+                $field.chosen({
+                    no_results_text: "{{ no_results_text|trans({}, translation_domain) }}",
+                    allow_single_deselect: {{ allow_single_deselect ? 'true' : 'false' }},
+                    disable_search_threshold: {{ disable_search_threshold }}
+                });
+            {% endblock %}
+        });
+    </script>
+{% endspaceless %}
+{% endblock %}
+
+
+
+{% block px_file_javascript %}
+{% spaceless %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        var $field = $('#{{ id }}_upload');
+        {% block px_jqueryfile_javascript_prototype %}
+        var $form = $field.closest('form');
+        var $queue = $('#{{ id }}_queue');
+        var $nbQueue = 0;
+
+        var $configs = $.extend({{ configs|merge({
+            'swf':       asset(configs.swf),
+            'cancelImg': asset(configs.cancelImg),
+            'uploader':  path(configs.script),
+            'queueID':   id ~ '_queue'
+        })|json_encode|raw }}, {
+            onUploadSuccess: function(file, data, response) {
+                data = jQuery.parseJSON(data);
+
+                if (data.result == '1') {
+                    {% if multiple %}
+                        var value = $('#{{ id }}').val();
+                        if (value != '') {
+                            value += ",";
+                        }
+                        value += data.file;
+                    {% else %}
+                        var value = data.file;
+                    {% endif %}
+
+                    $('#{{ id }}').val(value);
+                    $nbQueue--;
+                } else {
+                    alert('Error');
+                }
+            },
+            onSelect: function(file) {
+                $nbQueue++;
+            },
+            onUploadError: function(file, errorCode, errorMsg, errorString) {
+                alert('error');
+            }
+        });
+
+    {% if configs.auto is not defined or configs.auto is sameas(false) %}
+        $configs.onAllComplete = function(event, data) {
+            $form.submit();
+        };
+
+        $form.submit(function(event) {
+            if (0 === $nbQueue) {
+                return $joinFiles();
+            } else {
+                $field.uploadifyUpload();
+                event.preventDefault();
+            }
+        });
+    {% else %}
+        $form.submit(function(event) {
+            return $joinFiles();
+        });
+    {% endif %}
+
+        var $joinFiles = function() {
+            if ($files = $field.data('files')) {
+                $field.val($files.join(','));
+            }
+
+            return true;
+        }
+
+        $field.uploadify($configs);
+        {% endblock %}
+    });
+</script>
+{% endspaceless %}
+{% endblock %}
+
+{% block px_image_javascript %}
+{% spaceless %}
+<script type="text/javascript">
+
+    jQuery(document).ready(function($) {
+        var $field   = $('#{{ id }}_upload');
+        var $preview = $('#{{ id }}_img_preview');
+        var $options = $('#{{ id }}_options');
+        var $error = $('#{{ id }}_error');
+        var $text = $('#{{ id }}_text');
+        $field.on('click',function(e){
+            try {
+                var a = $('#{{ id }}')[0];
+                var evObj = document.createEvent('MouseEvents');
+                evObj.initMouseEvent('click', true, true, window);
+                a.dispatchEvent(evObj);
+            } catch(err) {
+                $('#{{ id }}').click();
+            }
+
+            e.preventDefault();
+        });
+        $("#{{ id }}").change(function () {
+            readURL(this,$text,$preview,$error);
+            });
+        });
+        function readURL(input,text,preview,error) {
+            var file = input;
+            var imgPath = file.value;
+            var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+            var o = file.value || '{{ 'px_form.image.no_file_selected'|trans}}';
+            text.text(o);
+            if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+                if (typeof (FileReader) != "undefined") {
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.attr("src",e.target.result);
+                };
+                reader.readAsDataURL(file.files[0]);
+                }
+                error.text("");
+            } else {
+                error.text("{{ 'px_form.image.accepted_format'|trans}}");
+            }
+
+        }
+</script>
+{% endspaceless %}
+{% endblock %}
+
+{% block px_select2_javascript %}
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $field = $('#{{ id }}');
+
+        {% block px_select2_javascript_prototype %}
+            $field.select2({{ configs|json_encode|raw }});
+        {% endblock %}
+    });
+    </script>
+{% endblock %}
+
+{% block px_collection_javascript %}
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $field = $('#{{ id }}');
+            $field.collection({
+                up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+                down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+                add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+                delete: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+                duplicate: '<a href="#">[ # ]</a>',
+                add_at_the_end: true,
+            });
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,6 @@
+px_form:
+    image :
+     button: Choisir une image
+     no_file_selected: Aucun fichier sélectionné
+     accepted_format: "Veuillez sélectionner une image (formats acceptés: gif, png, jpg, jpeg)"
+     empty: "Veuillez sélectionner une image "

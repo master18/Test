@@ -1,0 +1,132 @@
+{% block form_stylesheet %}
+{% spaceless %}
+    {% for child in form %}
+        {{ form_stylesheet(child) }}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_stylesheet %}
+
+{% block field_stylesheet "" %}
+
+{% block button_stylesheet "" %}
+
+
+{% block px_date_stylesheet %}
+{% spaceless %}
+    <link rel="stylesheet" href="{{ asset('bundles/pxform/css/datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/pxform/css/splashy.css') }}" />
+{% endspaceless %}
+{% endblock px_date_stylesheet %}
+
+{% block px_image_stylesheet %}
+{% spaceless %}
+    <style type="text/css" media="screen">
+        #{{ id }}_container {
+            overflow: hidden;
+        }
+
+        #{{ id }}_preview {
+            overflow: hidden;
+            position: relative;
+        }
+
+        #{{ id }}_preview object, #{{ id }}_overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            text-decoration: none;
+            display: block;
+            z-index: 361;
+            width: 19px;
+            height: 19px;
+
+            background: url({{ asset('bundles/pxform/images/edit.gif') }});
+        }
+
+        #{{ id }}_preview object {
+            opacity: 0;
+            z-index: 362;
+        }
+
+        #{{ id }}_container .left {
+            float: left;
+            position: relative;
+        }
+
+        #{{ id }}_options {
+            padding: 0px;
+            margin: 0px;
+            list-style-type: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 361;
+        }
+
+        #{{ id }}_options li {
+            background: transparent url({{ asset('bundles/pxform/images/icons.png') }});
+
+            display: inline;
+            float: left;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        #{{ id }}_options .rotate {
+            background-position: 0 0;
+        }
+
+        #{{ id }}_options .bw {
+            background-position: 0 -24px;
+        }
+
+        #{{ id }}_options .negative {
+            background-position: -24px 0;
+        }
+
+        #{{ id }}_options .sepia {
+            background-position: -24px -24px;
+        }
+
+        #{{ id }}_options .crop {
+            background-position: -48px 0;
+        }
+
+        #{{ id }}_options .blur {
+            background-position: -48px -24px;
+        }
+        #{{ id }}_options .loading {
+            background: #FFF url({{ asset('bundles/pxform/images/ajax-loader.gif') }}) no-repeat;
+            padding: 6px 0;
+            height: 11px;
+        }
+        .margin-top-10{
+            margin-top:10px ;
+        }
+        .image-error{
+            display: block;
+            color: red;
+        }
+    </style>
+{% endspaceless %}
+{% endblock px_image_stylesheet %}
+{% block px_slider_stylesheet %}
+    {% spaceless %}
+      <style>
+          .valeurProBar {
+              width: 22px;
+          }
+          .ProBarGroup span, .valeurProBar {
+              text-transform: uppercase;
+              font-family: montserratregular;
+              font-size: 12px;
+              font-weight: 400;
+              color: #777;
+              border: 0;
+              background-color: #f5f5f5;
+              display: inline-block;
+          }
+      </style>
+    {% endspaceless %}
+{% endblock px_slider_stylesheet %}

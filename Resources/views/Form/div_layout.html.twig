@@ -1,0 +1,134 @@
+{% block px_date_widget %}
+    {% spaceless %}
+        <div style='width: auto;max-width: 320px' class="input-group date" id="date-{{id}}"  data-date-format="dd/mm/yyyy">
+            <input class="form-control dateNaissance" type="text" id="{{id}}" value="{{ data }}"  {{ block('widget_attributes') }} />
+            <span class="input-group-addon input-group-addon-dp" id="calendar-button">
+                <i class='splashy-calendar_day'></i>
+            </span>
+        </div>
+    {% endspaceless %}
+{% endblock px_date_widget %}
+
+{% block px_slider_widget %}
+{% spaceless %}
+    {{ block("hidden_widget") }}
+    <div class="progressBarBlock marginBottom-3">
+        <div class="row">
+        <div class="col-xs-12">
+            <div class="col-sm-10">
+                <div class="progressBar-1">
+                    <div id="blue"></div>
+                    <div class="clear"></div>
+                </div><!--.progressBar-1-->
+            </div>
+            <div class="col-sm-2 ProBarGroup ">
+                <input type="text" title="slider" class="valeurProBar"/>
+                <span></span>
+            </div>
+        </div><!--.grid-->
+    </div><!--.progressBarBlock-->
+    </div><!--.progressBarBlock-->
+{% endspaceless %}
+{% endblock px_slider_widget %}
+
+{% block px_autocompleter_widget %}
+{% spaceless %}
+    {{ block("hidden_widget") }}
+
+    {% set id = "autocompleter_" ~ id %}
+    {% set full_name = "autocompleter_" ~ full_name %}
+    {% set value = autocompleter_value %}
+    {{ block("form_widget_simple") }}
+{% endspaceless %}
+{% endblock px_autocompleter_widget %}
+
+{% block px_chosen_widget %}
+{% spaceless %}
+    {% set attr = {
+            "data-placeholder": empty_value,
+            "class": "chzn-select"
+        }|merge(attr) %}
+    {{ block("choice_widget") }}
+{% endspaceless %}
+{% endblock px_chosen_widget %}
+{% block px_file_widget %}
+{% spaceless %}
+    {{ block("hidden_widget") }}
+    <div id="{{ id }}_upload"></div>
+    <div class="queue">
+        <div id="{{ id }}_queue"></div>
+    </div>
+{% endspaceless %}
+{% endblock px_file_widget %}
+{% block px_rating_widget %}
+{% spaceless %}
+    <div {{ block("widget_container_attributes") }}>
+    {% for child in form %}
+        {{ form_widget(child) }}
+    {% endfor %}
+    </div>
+{% endspaceless %}
+{% endblock px_rating_widget %}
+
+{% block px_image_widget %}
+{% spaceless %}
+    <div id="{{ id }}_container">
+        <div class="left">
+            <div id="{{ id }}_preview">
+                {% set type = "hidden" %}
+                {{ block("file_widget") }}
+                {% if value %}
+                    {% set widthMax = thumbnail is defined ? thumbnail.width : 500 %}
+                    {% set ratio = width > widthMax ? width / widthMax : 1 %}
+                    {% set asset = asset(thumbnail is defined ? thumbnail.file : value) %}
+                    {% set width = width / ratio %}
+                    {% set height = height / ratio %}
+                {% else %}
+                    {% set asset = asset("bundles/pxform/images/no_image.png") %}
+                    {% set width = 96 %}
+                    {% set height = 96 %}
+                {% endif %}
+                <img id="{{ id }}_img_preview" src="{{ asset }}" width="{{ width }}" height="{{ height }}" />
+            </div>
+            <div>
+                <span id="{{ id }}_error" class="image-error"></span>
+                <span id='{{ id }}_text'>{{ 'px_form.image.no_file_selected'|trans}}</span>
+            </div>
+            <a href="#" id="{{ id }}_upload" class="btn btn-primary margin-top-10">{{ 'px_form.image.button' |trans }}</a>
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock px_image_widget %}
+{% block px_tokeninput_widget %}
+{% spaceless %}
+{{ block("hidden_widget") }}
+
+{% set id = "tokeninput_" ~ id %}
+{% set full_name = "tokeninput_" ~ full_name %}
+{% set value = tokeninput_value %}
+{{ block("form_widget_simple") }}
+{% endspaceless %}
+{% endblock px_tokeninput_widget %}
+
+{% block px_plain_widget %}
+    <div {{ block('container_attributes') }}>
+        <p {{ block('widget_attributes') }}>{{ value|escape }}</p>
+    </div>
+{% endblock %}
+
+{% block px_select2_hidden_row %}
+    {{ block('form_row') }}
+{% endblock %}
+{% block px_collection_widget %}
+    {% spaceless %}
+        {% if prototype is defined %}
+            {% set attr = attr|merge({'data-prototype': form_row(prototype)}) %}
+            {% set attr = attr|merge({'data-prototype-name': prototype.vars.name}) %}
+        {% endif %}
+        {% set attr = attr|merge({'data-allow-add': allow_add ? 1 : 0}) %}
+        {% set attr = attr|merge({'data-allow-delete': allow_delete ? 1 : 0 }) %}
+        {% set attr = attr|merge({'data-name-prefix': full_name}) %}
+        {{ block('form_widget') }}
+    {% endspaceless %}
+{% endblock px_collection_widget %}
+

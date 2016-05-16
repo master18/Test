@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="px.form.tinymce.configs" type="collection" />
+        <parameter key="px.form.date.options" type="collection" />
+        <parameter key="px.form.rating.options" type="collection" />
+
+        <parameter key="px.form.file.root_dir">%kernel.root_dir%/../web</parameter>
+        <parameter key="px.form.file.folder">/upload</parameter>
+        <parameter key="px.form.file.upload_dir">%px.form.file.root_dir%/upload</parameter>
+        <parameter key="px.form.file.options" type="collection" />
+
+        <parameter key="px.form.image.selected" />
+        <parameter key="px.form.image.thumbnails" type="collection" />
+        <parameter key="px.form.image.filters" type="collection" />
+    </parameters>
+
+    <services>
+        <service id="px.form.core.type.plain" class="px\FormBundle\Form\Type\PlainType">
+            <tag name="form.type" alias="px_plain" />
+        </service>
+        <service id="px.form.core.type.tinymce" class="px\FormBundle\Form\Type\TinymceType">
+            <tag name="form.type" alias="px_tinymce" />
+            <argument>%px.form.tinymce.configs%</argument>
+        </service>
+        <service id="px.form.core.type.collection" class="px\FormBundle\Form\Type\CollectionType">
+            <tag name="form.type" alias="px_collection" />
+        </service>
+        <service id="px.form.jquery.type.autocompleter" class="px\FormBundle\Form\Type\AutocompleterType" abstract="true" />
+        <service id="px.form.jquery.type.autocomplete" class="px\FormBundle\Form\Type\AutocompleteType" abstract="true" />
+        <service id="px.form.jquery.type.chosen" class="px\FormBundle\Form\Type\ChosenType" abstract="true" />
+        <service id="px.form.jquery.type.select2" class="px\FormBundle\Form\Type\Select2Type" abstract="true" />
+        <service id="px.form.jquery.type.date" class="px\FormBundle\Form\Type\DateType">
+            <tag name="form.type" alias="px_date" />
+            <argument>%px.form.date.options%</argument>
+        </service>
+        <service id="px.form.jquery.type.file" class="px\FormBundle\Form\Type\FileType">
+            <tag name="form.type" alias="px_file" />
+            <argument>%px.form.file.options%</argument>
+            <argument>%px.form.file.root_dir%</argument>
+        </service>
+        <service id="px.form.jquery.type.image" class="px\FormBundle\Form\Type\ImageType">
+            <tag name="form.type" alias="px_image" />
+            <argument>%px.form.image.selected%</argument>
+            <argument>%px.form.image.thumbnails%</argument>
+            <argument>%px.form.image.filters%</argument>
+        </service>
+        <service id="px.form.jquery.type.rating" class="px\FormBundle\Form\Type\RatingType">
+            <tag name="form.type" alias="px_rating" />
+            <argument>%px.form.rating.options%</argument>
+        </service>
+        <service id="px.form.jquery.type.slider" class="px\FormBundle\Form\Type\SliderType">
+            <tag name="form.type" alias="px_slider" />
+        </service>
+        <service id="px.form.jquery.type.tokeninput" class="px\FormBundle\Form\Type\TokeninputType" abstract="true" />
+    </services>
+
+</container>
